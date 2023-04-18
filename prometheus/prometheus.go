@@ -14,7 +14,6 @@ type MetricsInterface interface {
 }
 
 type Prometheus struct {
-	Pusher  *push.Pusher
 	Label   []string
 	Metrics []PromMetrics
 }
