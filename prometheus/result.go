@@ -1,15 +1,29 @@
 package prometheus
 
-// A MetricLabel is a collection of string and string pairs.  The LabelSet
-// may be fully-qualified down to the point where it may resolve to a single
-// Metric in the data store or not.  All operations that occur within the realm
-// of a MetricLabel can emit a vector of Metric entities to which the MetricLabel may
-// match.
-type MetricLabel map[string]string
-
-type MatrixResult struct {
-	Metric MetricLabel    `json:"metric"`
-	Values []MatrixValues `json:"values"`
+// A MetricLabel is a prometheus metric label structure.
+type MetricLabel struct {
+	Label string
+	Value string
 }
 
-type MatrixValues []interface{}
+// MetricValues gets the metric value from the prometheus query.
+type MetricValues struct {
+	Timestamp int64
+	Value     float64
+}
+
+// MatrixResult obtains the matrix result y from the prometheus query.
+type MatrixResult struct {
+	Metric string `json:"metric""`
+	//Labels []MetricLabel  `json:"labels"`
+	Values []MetricValues `json:"values"`
+}
+
+type VectorResult struct {
+	Metric string       `json:"metric"`
+	Values MetricValues `json:"values"`
+}
+
+type ResultT interface {
+	MetricValues | []MatrixResult | []VectorResult
+}

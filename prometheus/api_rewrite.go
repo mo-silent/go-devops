@@ -137,7 +137,7 @@ func errorTypeAndMsgFor(resp *http.Response) (v1.ErrorType, string) {
 // RewriteAPI provides bindings for refactoring the v1 API for Prometheus.
 type RewriteAPI interface {
 	// QueryRange performs a query for the given range.
-	QueryRange(ctx context.Context, query string, r v1.Range, opts ...Option) (any, Warnings, error)
+	QueryRange(ctx context.Context, query string, r v1.Range, opts ...Option) ([]byte, Warnings, error)
 }
 
 type httpAPI struct {
@@ -164,9 +164,10 @@ type queryResult struct {
 	Result interface{}     `json:"result"`
 
 	// The decoded value.
-	v any
+	v []byte
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (qr *queryResult) UnmarshalJSON(b []byte) error {
 	v := struct {
 		Type   model.ValueType `json:"resultType"`
@@ -182,19 +183,23 @@ func (qr *queryResult) UnmarshalJSON(b []byte) error {
 	case model.ValScalar:
 		var sv model.Scalar
 		err = json.Unmarshal(v.Result, &sv)
-		qr.v = &sv
+		d := MetricValues{
+			Timestamp: int64(sv.Timestamp),
+			Value:     float64(sv.Value),
+		}
+		qr.v, _ = json.Marshal(d)
 
 	case model.ValVector:
 		var vv model.Vector
 		err = json.Unmarshal(v.Result, &vv)
-		fmt.Println(vv)
-		qr.v = vv
+		d := decodeVector(vv)
+		qr.v, _ = json.Marshal(d)
 
 	case model.ValMatrix:
-		var mv []MatrixResult
+		var mv model.Matrix
 		err = json.Unmarshal(v.Result, &mv)
-		fmt.Println(mv[0])
-		qr.v = mv
+		d := decodeMatrix(mv)
+		qr.v, _ = json.Marshal(d)
 
 	default:
 		err = fmt.Errorf("unexpected value type %q", v.Type)
@@ -213,7 +218,8 @@ func NewAPI(c api.Client) RewriteAPI {
 	}
 }
 
-func (h *httpAPI) QueryRange(ctx context.Context, query string, r v1.Range, opts ...Option) (any, Warnings, error) {
+// QueryRange implements prometheus httpAPI.QueryRange
+func (h *httpAPI) QueryRange(ctx context.Context, query string, r v1.Range, opts ...Option) ([]byte, Warnings, error) {
 	u := h.client.URL(epQueryRange, nil)
 	q := u.Query()
 
@@ -243,4 +249,37 @@ func (h *httpAPI) QueryRange(ctx context.Context, query string, r v1.Range, opts
 
 func formatTime(t time.Time) string {
 	return strconv.FormatFloat(float64(t.Unix())+float64(t.Nanosecond())/1e9, 'f', -1, 64)
+}
+
+func decodeMatrix(mv model.Matrix) (res []MatrixResult) {
+
+	for _, ss := range mv {
+		mr := MatrixResult{
+			Metric: fmt.Sprint(ss.Metric),
+			Values: nil,
+		}
+		for _, sp := range ss.Values {
+			v := MetricValues{
+				Timestamp: int64(sp.Timestamp),
+				Value:     float64(sp.Value),
+			}
+			mr.Values = append(mr.Values, v)
+		}
+		res = append(res, mr)
+	}
+	return
+}
+
+func decodeVector(ms model.Vector) (res []VectorResult) {
+	for _, mv := range ms {
+		v := VectorResult{
+			Metric: fmt.Sprint(mv.Metric),
+			Values: MetricValues{
+				Timestamp: int64(mv.Timestamp),
+				Value:     float64(mv.Value),
+			},
+		}
+		res = append(res, v)
+	}
+	return
 }
