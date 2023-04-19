@@ -26,22 +26,23 @@ import (
 
 // MetricsInterface is the interface that
 // implements prometheus push metrics
-// and range queries
+// and range queries.
 type MetricsInterface interface {
 	Push(context.Context, PushMetrics, string) error
 	QueryRange(context.Context, api.Client, string, v1.Range, ...Option) ([]MatrixResult, error)
 }
 
-// Prometheus implemented MetricsInterface
+// Prometheus implements MetricsInterface.
 type Prometheus struct{}
 
-// PushMetrics implemented a new Prometheus metrics
+// PushMetrics implements a new Prometheus metrics.
 type PushMetrics struct {
 	Name    string        // description of metrics name
 	Label   []string      // description of metrics label
 	Metrics []PromMetrics // values of metrics label and metrics value
 }
 
+// PromMetrics is a prometheus metrics values.
 type PromMetrics struct {
 	Values []string // values of metrics label
 	Data   float64  // metrics value
@@ -62,7 +63,7 @@ func DataValueVec(name string, label []string) *prometheus.GaugeVec {
 	}, label)
 }
 
-// Push implements a new prometheus metrics pushed to PushGateway
+// Push implements a new prometheus metrics pushed to PushGateway.
 func (p *Prometheus) Push(ctx context.Context, pm PushMetrics, addr string) error {
 
 	gauge := DataValueVec(pm.Name, pm.Label)

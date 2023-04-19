@@ -28,7 +28,7 @@ func main() {
 	log.SetOutput(os.Stdout)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	p := devops.NewPrometheus()
+	p := devops.NewDevops().Prometheus()
 	pm := prometheus.PushMetrics{
 		Name:  "test",
 		Label: []string{"sample1", "sample2"},

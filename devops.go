@@ -17,6 +17,20 @@ import (
 	"github.com/mo-silent/go-devops/prometheus"
 )
 
-func NewPrometheus() prometheus.MetricsInterface {
+// Tools implements all devops tools.
+type Tools interface {
+	Prometheus() prometheus.MetricsInterface
+}
+
+// Devops implements Tools.
+type Devops struct{}
+
+// Prometheus implements prometheus method.
+func (d Devops) Prometheus() prometheus.MetricsInterface {
 	return &prometheus.Prometheus{}
+}
+
+// NewDevops implements devops method.
+func NewDevops() Tools {
+	return Devops{}
 }
