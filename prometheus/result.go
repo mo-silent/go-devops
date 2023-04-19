@@ -14,7 +14,7 @@ type MetricValues struct {
 
 // MatrixResult obtains the matrix result y from the prometheus query.
 type MatrixResult struct {
-	Metric string `json:"metric""`
+	Metric string `json:"metric"`
 	//Labels []MetricLabel  `json:"labels"`
 	Values []MetricValues `json:"values"`
 }
