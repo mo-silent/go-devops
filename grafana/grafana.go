@@ -3,7 +3,7 @@ package grafana
 import (
 	"context"
 	"crypto/tls"
-	"github.com/mo-silent/go-devops"
+	"github.com/mo-silent/go-devops/common"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
@@ -35,7 +35,7 @@ func (ag AliGrafana) Query(ctx context.Context, addr, token, query string, end i
 				InsecureSkipVerify: true,
 			}},
 	}
-	newHttp := devops.NewDevops().Http(client)
+	newHttp := common.NewClient(client)
 	payload := strings.NewReader("")
 
 	header := make(map[string]string)
