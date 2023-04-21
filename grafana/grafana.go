@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/mo-silent/go-devops/common"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -49,7 +48,7 @@ func (ag AliGrafana) Query(ctx context.Context, addr, token, query string, end i
 
 	res, err := newHttp.Post(ctx, addr, payload, header, params)
 	if err != nil {
-		log.Errorf("Post metrics data from grafana error: %s", err.Error())
+		//log.Errorf("Post metrics data from grafana error: %s", err.Error())
 		return nil, err
 	}
 	return res, nil
@@ -81,7 +80,7 @@ func (ag AliGrafana) QueryRange(ctx context.Context, addr, token, query string, 
 
 	res, err := newHttp.Post(ctx, addr, payload, header, params)
 	if err != nil {
-		log.Errorf("Post metrics data from grafana error: %s", err.Error())
+		//log.Errorf("Post metrics data from grafana error: %s", err.Error())
 		return nil, err
 	}
 	return res, nil
