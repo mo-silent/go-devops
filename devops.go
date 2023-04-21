@@ -14,12 +14,17 @@
 package devops
 
 import (
+	"github.com/mo-silent/go-devops/common"
+	"github.com/mo-silent/go-devops/grafana"
 	"github.com/mo-silent/go-devops/prometheus"
+	"net/http"
 )
 
 // Tools implements all devops tools.
 type Tools interface {
 	Prometheus() prometheus.MetricsInterface
+	Http(client http.Client) common.DevopsHttpClient
+	AliGrafana() grafana.MetricsInterface
 }
 
 // Devops implements Tools.
@@ -28,6 +33,14 @@ type Devops struct{}
 // Prometheus implements prometheus method.
 func (d Devops) Prometheus() prometheus.MetricsInterface {
 	return &prometheus.Prometheus{}
+}
+
+func (d Devops) Http(client http.Client) common.DevopsHttpClient {
+	return common.NewClient(client)
+}
+
+func (d Devops) AliGrafana() grafana.MetricsInterface {
+	return grafana.AliGrafana{}
 }
 
 // NewDevops implements devops method.
