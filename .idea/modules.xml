@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/go-devops.iml" filepath="$PROJECT_DIR$/.idea/go-devops.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../go-study/test/.idea/test.iml" filepath="$PROJECT_DIR$/../go-study/test/.idea/test.iml" />
     </modules>
   </component>
 </project>

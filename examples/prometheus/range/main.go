@@ -48,7 +48,7 @@ func main() {
 	}
 	log.Debugf("start: %v, end time: %v", end.Add(-6*time.Minute), end)
 
-	p := devops.NewPrometheus()
+	p := devops.NewDevops().Prometheus()
 	res, err := p.QueryRange(ctx, client, "test", r, prometheus.WithTimeout(5*time.Second))
 	if err != nil {
 		log.Errorf("Error querying Prometheus: %v\n", err)

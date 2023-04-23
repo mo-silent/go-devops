@@ -6,15 +6,21 @@ import (
 	"testing"
 )
 
-func TestNewPrometheus(t *testing.T) {
-	var tests []struct {
+func TestDevops_Prometheus(t *testing.T) {
+	tests := []struct {
 		name string
 		want prometheus.MetricsInterface
+	}{
+		{
+			name: "test",
+			want: &prometheus.Prometheus{},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewPrometheus(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewPrometheus() = %v, want %v", got, tt.want)
+			d := Devops{}
+			if got := d.Prometheus(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Prometheus() = %v, want %v", got, tt.want)
 			}
 		})
 	}
