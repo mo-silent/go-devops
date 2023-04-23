@@ -16,9 +16,13 @@ The [examples prometheus directory](https://github.com/mo-silent/go-devops/tree/
 
 ### Grafana
 
-The [grafana directory](https://github.com/mo-silent/go-devops/tree/main/grafana) includes some querying methods of Grafana.
+The [open-source directory](https://github.com/mo-silent/go-devops/tree/main/grafana/open-source) includes some querying methods of Open-source Grafana.
 
-### Dynatrace
+The [aliyun directory](https://github.com/mo-silent/go-devops/tree/main/grafana/aliyun) includes some querying methods of Aliyun Grafana.
+
+### ~~Dynatrace~~
+
+> disabled
 
 The [dynatrace directory](https://github.com/mo-silent/go-devops/tree/main/dynatrace) contains commonly used query methods for Dynatrace.
 

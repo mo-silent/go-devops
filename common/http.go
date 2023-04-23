@@ -5,12 +5,11 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 type DevopsHttpClient interface {
 	Get(ctx context.Context, addr string, headers map[string]string) ([]byte, error)
-	Post(ctx context.Context, addr string, payload *strings.Reader, headers map[string]string, params url.Values) ([]byte, error)
+	Post(ctx context.Context, addr string, payload io.Reader, headers map[string]string, params url.Values) ([]byte, error)
 }
 
 type newHttp struct {
@@ -43,9 +42,10 @@ func (h *newHttp) Get(ctx context.Context, addr string, headers map[string]strin
 	return bodyRes, nil
 }
 
-// Post is an HTTP POST method that returns a byte slice
-// of the body of the POST request.
-func (h *newHttp) Post(ctx context.Context, addr string, payload *strings.Reader, headers map[string]string, params url.Values) ([]byte, error) {
+// Post is an HTTP POST method with Params that
+// returns a byte slice of the body of the POST
+// request.
+func (h *newHttp) Post(ctx context.Context, addr string, payload io.Reader, headers map[string]string, params url.Values) ([]byte, error) {
 	paramsUrl, err := url.Parse(addr)
 	if err != nil {
 		return nil, err
