@@ -11,13 +11,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package prometheus
 
 import (
 	"context"
 	"fmt"
 	"github.com/mo-silent/go-devops"
-	"github.com/mo-silent/go-devops/prometheus"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	log "github.com/sirupsen/logrus"
@@ -25,12 +24,40 @@ import (
 	"time"
 )
 
-// An example of how to query Prometheus metrics by range.
-func main() {
+func ExamplePrometheus_Push() {
+	// prometheus push metrics example
 	log.SetLevel(log.DebugLevel)
 	log.SetOutput(os.Stdout)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
+	p := devops.NewDevops().Prometheus()
+	// PushMetrics is prometheus.PushMetrics.
+	// The example is in the same directory as the structure,
+	// so it does not have a directory beginning
+	pm := PushMetrics{
+		Name:  "test",
+		Label: []string{"sample1", "sample2"},
+		// ProMetrics is prometheus.ProMetrics
+		Metrics: []PromMetrics{
+			{
+				Values: []string{"s1", "s2"},
+				Data:   99.99,
+			},
+		},
+	}
+	if err := p.Push(ctx, pm, "localhost:9091"); err != nil {
+		log.Errorf("push metrics error, err:  %v", err)
+	}
+}
+
+func ExamplePrometheus_QueryRange() {
+	// An example of how to query Prometheus metrics by range.
+	log.SetLevel(log.DebugLevel)
+	log.SetOutput(os.Stdout)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+
+	// new prometheus client
 	client, err := api.NewClient(api.Config{
 		Address: "http://localhost:80",
 	})
@@ -49,7 +76,8 @@ func main() {
 	log.Debugf("start: %v, end time: %v", end.Add(-6*time.Minute), end)
 
 	p := devops.NewDevops().Prometheus()
-	res, err := p.QueryRange(ctx, client, "test", r, prometheus.WithTimeout(5*time.Second))
+	// WithTimeout() is prometheus.WithTimeout()
+	res, err := p.QueryRange(ctx, client, "test", r, WithTimeout(5*time.Second))
 	if err != nil {
 		log.Errorf("Error querying Prometheus: %v\n", err)
 	}

@@ -5,6 +5,10 @@
 
 This is the [Go](https://go.dev/) Devops tool library is used to encapsulate common tool methods
 
+## Common
+
+Some commonly used method encapsulation, such as http, ssh
+
 ## Logging & Monitoring
 Encapsulated commonly used log monitoring queries for use in log monitoring tools. 
 
