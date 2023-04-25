@@ -23,6 +23,8 @@ import (
 	"time"
 )
 
+// ExampleGrafana_Query demonstrates how to use Grafana.Query.
+// https://go.dev/play/p/CPiKdGZFx8I
 func ExampleGrafana_Query() {
 	// An example of an open-source Grafana query
 
@@ -45,6 +47,8 @@ func ExampleGrafana_Query() {
 	log.Debug(string(bytes))
 }
 
+// ExampleAliGrafana_Query demonstrates how to use AliGrafana.Query.
+// https://go.dev/play/p/QzHKXp1nzxg
 func ExampleAliGrafana_Query() {
 	// An example of an Alibaba Cloud Grafana query
 	log.SetLevel(log.DebugLevel)
@@ -69,6 +73,8 @@ func ExampleAliGrafana_Query() {
 	fmt.Println(string(res))
 }
 
+// ExampleAliGrafana_QueryRange demonstrates how to use AliGrafana.QueryRange.
+// https://go.dev/play/p/UV5IMSQArm9
 func ExampleAliGrafana_QueryRange() {
 	// An example of an Alibaba Cloud Grafana range query
 	log.SetLevel(log.DebugLevel)
