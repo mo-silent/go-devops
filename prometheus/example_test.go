@@ -11,12 +11,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package prometheus
+package prometheus_test
 
 import (
 	"context"
 	"fmt"
 	"github.com/mo-silent/go-devops"
+	"github.com/mo-silent/go-devops/prometheus"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	log "github.com/sirupsen/logrus"
@@ -31,14 +32,10 @@ func ExamplePrometheus_Push() {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	p := devops.NewDevops().Prometheus()
-	// PushMetrics is prometheus.PushMetrics.
-	// The example is in the same directory as the structure,
-	// so it does not have a directory beginning
-	pm := PushMetrics{
+	pm := prometheus.PushMetrics{
 		Name:  "test",
 		Label: []string{"sample1", "sample2"},
-		// ProMetrics is prometheus.ProMetrics
-		Metrics: []PromMetrics{
+		Metrics: []prometheus.PromMetrics{
 			{
 				Values: []string{"s1", "s2"},
 				Data:   99.99,
@@ -76,8 +73,7 @@ func ExamplePrometheus_QueryRange() {
 	log.Debugf("start: %v, end time: %v", end.Add(-6*time.Minute), end)
 
 	p := devops.NewDevops().Prometheus()
-	// WithTimeout() is prometheus.WithTimeout()
-	res, err := p.QueryRange(ctx, client, "test", r, WithTimeout(5*time.Second))
+	res, err := p.QueryRange(ctx, client, "test", r, prometheus.WithTimeout(5*time.Second))
 	if err != nil {
 		log.Errorf("Error querying Prometheus: %v\n", err)
 	}
