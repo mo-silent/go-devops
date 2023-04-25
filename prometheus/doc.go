@@ -12,10 +12,10 @@
 // limitations under the License.
 
 /*
-Package grafana implements grafana client
+Package prometheus implements prometheus client
 
 References:
 
 	[Go Reference]: https://pkg.go.dev/badge/github.com/mo-silent/go-devops.svg
 */
-package grafana // import "github.com/mo-silent/go-devops/grafana"
+package prometheus // import "github.com/mo-silent/go-devops/prometheus"
