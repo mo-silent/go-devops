@@ -25,6 +25,8 @@ import (
 	"time"
 )
 
+// ExamplePrometheus_Push demonstrates how to use Prometheus.Push.
+// https://go.dev/play/p/ViGSBJbtGKz
 func ExamplePrometheus_Push() {
 	// prometheus push metrics example
 	log.SetLevel(log.DebugLevel)
@@ -47,6 +49,8 @@ func ExamplePrometheus_Push() {
 	}
 }
 
+// ExamplePrometheus_QueryRange demonstrates how to use Prometheus.QueryRange.
+// https://go.dev/play/p/93u8wDVtRbD
 func ExamplePrometheus_QueryRange() {
 	// An example of how to query Prometheus metrics by range.
 	log.SetLevel(log.DebugLevel)
