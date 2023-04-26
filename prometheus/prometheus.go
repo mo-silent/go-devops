@@ -15,13 +15,14 @@ package prometheus
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/prometheus/client_golang/api"
 	v1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
+	"github.com/prometheus/common/model"
 	"net/http/httptrace"
+	"time"
 )
 
 // MetricsInterface is the interface that
@@ -29,7 +30,8 @@ import (
 // and range queries.
 type MetricsInterface interface {
 	Push(context.Context, PushMetrics, string) error
-	QueryRange(context.Context, api.Client, string, v1.Range, ...Option) ([]MatrixResult, error)
+	Query(ctx context.Context, client api.Client, query string, endTime int64) (ResultValues, error)
+	QueryRange(ctx context.Context, client api.Client, query string, r v1.Range, opts ...v1.Option) (ResultValues, error)
 }
 
 // Prometheus implements MetricsInterface.
@@ -83,9 +85,22 @@ func (p *Prometheus) Push(ctx context.Context, pm PushMetrics, addr string) erro
 	//return nil
 }
 
+func (p *Prometheus) Query(ctx context.Context, client api.Client, query string, endTime int64) (ResultValues, error) {
+	end := time.Unix(0, endTime*int64(time.Millisecond)).UTC()
+	v1api := v1.NewAPI(client)
+	res, warnings, err := v1api.Query(ctx, query, end, v1.WithTimeout(5*time.Second))
+	if err != nil {
+		return nil, err
+	}
+	if len(warnings) > 0 {
+		fmt.Printf("Warnings: %v\n", warnings)
+	}
+	return convertValue(res), nil
+}
+
 // QueryRange implements prometheus range query.
-func (p *Prometheus) QueryRange(ctx context.Context, client api.Client, query string, r v1.Range, opts ...Option) (res []MatrixResult, err error) {
-	v1api := NewAPI(client)
+func (p *Prometheus) QueryRange(ctx context.Context, client api.Client, query string, r v1.Range, opts ...v1.Option) (ResultValues, error) {
+	v1api := v1.NewAPI(client)
 	v1Res, warnings, err := v1api.QueryRange(ctx, query, r, opts...)
 	if err != nil {
 		return nil, err
@@ -93,9 +108,64 @@ func (p *Prometheus) QueryRange(ctx context.Context, client api.Client, query st
 	if len(warnings) > 0 {
 		fmt.Printf("Warnings: %v\n", warnings)
 	}
-	if err = json.Unmarshal(v1Res, &res); err != nil {
-		fmt.Printf("un marshal query range value error, err: %v, value: %s\n", err, string(v1Res))
-	}
+	return convertValue(v1Res), nil
+}
 
+func convertValue(value model.Value) (res ResultValues) {
+	switch value.Type() {
+	case model.ValScalar:
+		v := value.(*model.Scalar)
+		res = decodeScalar(v)
+	case model.ValVector:
+		v, _ := value.(model.Vector)
+		res = decodeVector(v)
+	case model.ValMatrix:
+		mv := value.(model.Matrix)
+		res = decodeMatrix(mv)
+	default:
+		fmt.Printf("Unknow Type")
+	}
 	return
+}
+
+func decodeMatrix(matrix model.Matrix) (res Matrix) {
+
+	for _, ss := range matrix {
+		mr := MatrixResult{
+			Metric: fmt.Sprint(ss.Metric),
+			Values: nil,
+		}
+		for _, sp := range ss.Values {
+			v := MetricValues{
+				Timestamp: int64(sp.Timestamp),
+				Value:     float64(sp.Value),
+			}
+			mr.Values = append(mr.Values, v)
+		}
+		res = append(res, mr)
+	}
+	return
+}
+
+func decodeVector(vector model.Vector) (res Vector) {
+	for _, mv := range vector {
+		v := VectorResult{
+			Metric: fmt.Sprint(mv.Metric),
+			Values: MetricValues{
+				Timestamp: int64(mv.Timestamp),
+				Value:     float64(mv.Value),
+			},
+		}
+		res = append(res, v)
+	}
+	return
+}
+
+func decodeScalar(scalar *model.Scalar) Scalar {
+	return Scalar{
+		Value: MetricValues{
+			Value:     float64(scalar.Value),
+			Timestamp: int64(scalar.Timestamp),
+		},
+	}
 }
