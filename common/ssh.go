@@ -48,7 +48,7 @@ func (s *SSH) ExecuteWithKeyFile(file, cmd string) ([]byte, error) {
 		Auth: []ssh.AuthMethod{
 			publicKeyFile(file),
 		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // 忽略 HostKey 验证
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(), // HostKey authentication is ignored
 	}
 
 	// establish an SSH connection
