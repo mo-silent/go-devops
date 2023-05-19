@@ -33,6 +33,7 @@ The [dynatrace directory](https://github.com/mo-silent/go-devops/tree/main/dynat
 ## CI & CD
 - Gitlab
 - Jenkins
+- Jira
 
 ## Database
 - MongoDB
