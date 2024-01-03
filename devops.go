@@ -15,6 +15,7 @@ package devops
 
 import (
 	"github.com/mo-silent/go-devops/grafana"
+	opsJira "github.com/mo-silent/go-devops/jira"
 	"github.com/mo-silent/go-devops/prometheus"
 )
 
@@ -23,6 +24,7 @@ type Tools interface {
 	Prometheus() prometheus.MetricsInterface
 	AliGrafana() grafana.MetricsInterface
 	Grafana() grafana.MetricsInterface
+	Jira() opsJira.OpsJira
 }
 
 // Devops implements Tools.
@@ -41,6 +43,11 @@ func (d Devops) AliGrafana() grafana.MetricsInterface {
 // Grafana implement grafana.Grafana.
 func (d Devops) Grafana() grafana.MetricsInterface {
 	return grafana.Grafana{}
+}
+
+// Jira implement opsJira.Jira.
+func (d Devops) Jira() opsJira.OpsJira {
+	return &opsJira.Jira{}
 }
 
 // NewDevops implements devops method.

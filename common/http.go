@@ -60,10 +60,10 @@ func (h *newHttp) Post(ctx context.Context, addr string, payload io.Reader, head
 		req.Header.Add(k, v)
 	}
 	res, err := h.Client.Do(req)
-	defer res.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
